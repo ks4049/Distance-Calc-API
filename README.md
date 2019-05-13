@@ -22,12 +22,12 @@ Clone the Distance-Calc-API repository
   ```
   Now, all the dependencies required for the application all installed.
  
-  ###Command to run the node server:
+  ### Command to run the node server:
   ```
   node index.js
   
   ```
-  To run the application:
+  ### To run the application:
   ```
   localhost:5000
   ```
