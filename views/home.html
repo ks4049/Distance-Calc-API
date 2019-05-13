@@ -1,0 +1,159 @@
+<html>
+	<head>
+		<script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+		<link href="https://netdna.bootstrapcdn.com/bootstrap/3.1.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+		<link rel="stylesheet" type="text/css" href="css/styles.css"/>
+		<link rel="icon" href="img/favicon.png" type="image/gif" sizes="16x16">
+		<title>Web Service API for Distance Calculation</title>
+		<script type="text/javascript">
+			//Form Validation
+			function validateForm(){
+				var validZip = /^\d{5,6}$|^\d{5}-\d{4}$/;
+				var address1 = document.getElementById("addr1").value;
+				var address2 = document.getElementById("addr2").value;
+				console.log("testing "+address1);
+				if(!validZip.test(address1) || !validZip.test(address2)){
+					alert("Invalid zip code!!! Provide a valid zip code.");
+					return false;
+				}
+				return true;
+			}
+
+			function computeDistance(){
+				var divTag = document.getElementById("computedDistance"); 
+				while(divTag.hasChildNodes()){
+					console.log("has child nodes");
+					divTag.removeChild(divTag.firstChild);
+				}
+				if(validateForm()){
+					var address1 = document.getElementById("addr1").value;
+					var address2 = document.getElementById("addr2").value;					 
+					//get lat and long from the addresses					
+					var requestUrl = "https://maps.googleapis.com/maps/api/geocode/json?&address="+address1+"&key=AIzaSyD1kluucrrcZZ_wOf-5n_RawsH93EZyBWQ";
+					$.ajax({
+						url:requestUrl,
+						type:'GET',
+						dataType: 'json',						
+						success: (data)=>{
+							console.log(data["results"]);
+							var jsonData = data["results"];
+							console.log("Length of results "+data["results"].length);
+							if(jsonData.length==1){
+								console.log("Hurrayyyyy!!!!");
+								console.log(jsonData[0]);
+								var geoData1 = jsonData[0]["geometry"]["location"];
+								console.log("Geometric data "+JSON.stringify(geoData1));
+								console.log("latitude and longitude are "+geoData1["lat"]+" "+geoData1["lng"]);
+								//get the address2 details
+								var requestUrl2 = "https://maps.googleapis.com/maps/api/geocode/json?&address="+address2+"&key=AIzaSyD1kluucrrcZZ_wOf-5n_RawsH93EZyBWQ";
+								$.ajax({
+									url: requestUrl2,
+									type: 'GET',
+									dataType: 'json',
+									success: (data)=>{
+										console.log(data["results"]);
+										if(data["results"].length==1){
+											var geoData2 = data["results"][0]["geometry"]["location"];
+											console.log("Geometric data of address2 "+JSON.stringify(geoData2));
+											console.log("latitude and longitude are "+geoData2["lat"]+geoData2["lng"]);
+											//compute distance here
+											distanceInKm = computeDistanceInKm(geoData1["lat"], geoData1["lng"], geoData2["lat"], geoData2["lng"]);
+											console.log("Distance in km: "+distanceInKm);
+											var isChecked = document.getElementById("inMiles").checked;
+											console.log("checked or not "+isChecked);
+											var finalDistance=distanceInKm;
+											if(isChecked){
+												distanceInMiles = 0.621371*distanceInKm;
+												finalDistance=distanceInMiles;			
+											}
+											console.log("final distance is "+finalDistance);
+											var pTag = document.createElement("p");
+											var pText = document.createTextNode("The distance between the two locations: "+ finalDistance + (isChecked? " miles.": " km."));
+											pTag.appendChild(pText);
+											divTag.appendChild(pTag);
+											document.body.appendChild(divTag);
+										}													
+									},
+									error: function(data){
+										console.log("Couldn't retrieve geographical information");
+									}
+								});
+
+							}
+							//alert("Distance Computation using latitude and longitude.");
+						},
+						error: function(data){
+							console.log("Couldn't retrieve geographical information");
+						}
+					});					
+				}											
+			}
+
+			function computeDistanceInKm(lat1, lon1, lat2, lon2){
+				var earthRadiusKm=6371;
+				var dLat = degreesToRadians(lat2-lat1);
+				var dLon = degreesToRadians(lon2-lon1);
+				
+				lat1 = degreesToRadians(lat1);
+				lat2 = degreesToRadians(lat2);
+
+				var a = Math.sin(dLat/2) * Math.sin(dLat/2) + Math.sin(dLon/2) * Math.sin(dLon/2) *Math.cos(lat1) * Math.cos(lat2); 
+				var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); 
+				return earthRadiusKm * c;
+			}
+
+			function degreesToRadians(degrees) {
+  				return degrees * Math.PI / 180;
+			}
+
+			function showDirections(){
+				var address1 = document.getElementById("addr1").value;
+				var address2 = document.getElementById("addr2").value;
+				if(validateForm())
+				{
+					var mapUrl = "https://www.google.com/maps/dir/?api=1&origin="+address1+"&destination="+address2+"&travelmode=walking";
+					console.log(mapUrl);
+					window.location.href = mapUrl;
+					alert("Show Directions using Google Maps API.");	
+				}
+			}
+		</script>
+	</head>	
+	<body>
+		<div class="container">
+			<div class="row">
+				<h1>Distance Calculator and RoadMap view</h1>	
+			</div>
+			<div class="row">
+				<div class="col-md-12">
+					<h3>Enter the addresses to compute the distance and get the directions !!!</h5>
+					<!-- <form name="mainForm"> -->
+                	<div class="form-group">
+                        <label for="zipcode" id="zipInfo">Enter the source address/zip code:</label>
+                        <input type="text" class="form-control" placeholder="source zipcode/address" name="addr1" id="addr1"/><br/>
+                        <label for="zipcode" id="zipInfo">Enter the destination address/zip code:</label>
+                        <input type="text" class="form-control" placeholder="destination zipcode/address" name="addr2" id="addr2"/><br/>                       
+                        <label for="distance" id="distanceIn"> Distance in:</label>
+                        <div class="form-check">
+  							<input class="form-check-input" type="radio" name="distance" id="inKm" value="option1" checked>
+  							<label class="form-check-label" for="exampleRadios1"> Kilometers(km)</label>
+						</div>
+						<div class="form-check">
+					  		<input class="form-check-input" type="radio" name="distance" id="inMiles" value="option2">
+					  		<label class="form-check-label" for="exampleRadios2">Miles(mi)
+					  		</label>
+						</div>
+                  	</div>
+                  	<br/>
+                  	<div class="btn-toolbar text-center">
+                    	<button type="submit" class="btn btn-primary" id="button1" onclick="computeDistance()">Compute distance</button>
+                       	<button type="submit" class="btn btn-primary" id="button2" onclick="showDirections()">Show directions</button>
+	               </div> 
+	               <br/>
+				   <div id="computedDistance"></div>	               
+				</div>
+			</div>	
+		</div>			
+	</body>
+</html>

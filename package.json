@@ -1,0 +1,28 @@
+{
+  "name": "distanceapi",
+  "version": "1.0.0",
+  "description": "An API to find the distance between two locations.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ks4049/Distance-Calc-API.git"
+  },
+  "keywords": [
+    "distance-calculation",
+    "address/zipcode",
+    "googleMapsAPI"
+  ],
+  "author": "Khavya Seshadri",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ks4049/Distance-Calc-API/issues"
+  },
+  "homepage": "https://github.com/ks4049/Distance-Calc-API#readme",
+  "dependencies": {
+    "express": "^4.16.4",
+    "path": "^0.12.7"
+  }
+}
