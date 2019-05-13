@@ -5,7 +5,7 @@ The user has to provide two addresses/zipcode and the application will provide t
 ### Requirements
 1. Install Node on your system using the following command for MacOS:
   ```
-   brew install node
+  brew install node
   ```
 2. Type in the following command in Terminal to check the Node and NPM version
   ```
