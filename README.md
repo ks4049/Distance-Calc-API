@@ -25,7 +25,6 @@ Clone the Distance-Calc-API repository
   ### Command to run the node server:
   ```
   node index.js
-  
   ```
   ### To run the application:
   ```
