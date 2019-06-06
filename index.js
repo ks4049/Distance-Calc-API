@@ -11,5 +11,5 @@ app.get('/', function(req, res){
 	res.sendFile(path.join(__dirname,'/views/home.html'));
 });
 
-app.listen(port, hostName);
+app.listen(port);
 console.log("Web Service API application");
