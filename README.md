@@ -24,9 +24,9 @@ Clone the Distance-Calc-API repository
  
   #### Command to run the node server:
   ```
-  node index.js
+  npm start
   ```
-  #### To run the application:
+  #### To run the application on your local machine:
   ```
   localhost:5000
   ```
